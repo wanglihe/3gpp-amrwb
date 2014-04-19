@@ -301,35 +301,24 @@ Word32 D_MAIN_decode(Word16 mode, Word16 prms[], Word16 synth16k[],
 
    if(newDTXState == SPEECH)
    {
-	   vad_flag = (UWord8)(*prms++);
+      vad_flag = (UWord8)(*prms++);
 
-	   if(bfi == 0)
-	   {
-		   if(vad_flag == 0)
-		   {
-			   st->mem_vad_hist = (Word16)(st->mem_vad_hist + 1);
-			   st->dtx_decSt->mem_dtx_vad_hist = (Word16)(st->dtx_decSt->mem_dtx_vad_hist + 1);
+      if(bfi == 0)
+      {
+         if(vad_flag == 0)
+         {
+            st->mem_vad_hist = (Word16)(st->mem_vad_hist + 1);
 
-			   if(st->mem_vad_hist > 32767)
-			   {
-				   st->mem_vad_hist = 32767;
-			   }
-		   }
-		   else
-		   {
-			   st->mem_vad_hist = 0;
-			   st->dtx_decSt->mem_dtx_vad_hist = 0;
-		   }
-	   }
-	   else if (st->dtx_decSt->mem_dtx_vad_hist > 0)
-	   {
-		   st->dtx_decSt->mem_dtx_vad_hist = (Word16)(st->dtx_decSt->mem_dtx_vad_hist + 1);
-	   }
-
-	   if (st->dtx_decSt->mem_dtx_vad_hist > 32767)
-	   {
-		   st->dtx_decSt->mem_dtx_vad_hist = 32767;
-	   }
+            if(st->mem_vad_hist > 32767)
+            {
+               st->mem_vad_hist = 32767;
+            }
+         }
+         else
+         {
+            st->mem_vad_hist = 0;
+         }
+      }
    }
 
    /*

@@ -77,7 +77,6 @@ int D_DTX_reset(D_DTX_State *st, const Word16 *isf_init)
    st->mem_data_updated = 0;
    st->mem_dither_seed = RANDOM_INITSEED;
    st->mem_cn_dith = 0;
-   st->mem_dtx_vad_hist = 0;
 
    return(0);
 }
@@ -208,7 +207,8 @@ UWord8 D_DTX_rx_handler(D_DTX_State *st, UWord8 frame_type)
       st->mem_since_last_sid = D_UTIL_saturate(st->mem_since_last_sid + 1);
 
       /* no update of sid parameters in DTX for a Word32 while */
-      if(st->mem_since_last_sid > D_DTX_MAX_EMPTY_THRESH)
+      if ((frame_type !=  RX_SID_UPDATE)  &&
+          (st->mem_since_last_sid > D_DTX_MAX_EMPTY_THRESH))
       {
          newState = D_DTX_MUTE;
       }
@@ -244,16 +244,13 @@ UWord8 D_DTX_rx_handler(D_DTX_State *st, UWord8 frame_type)
    st->mem_dtx_hangover_added = 0;
 
    if((frame_type == RX_SID_FIRST) | (frame_type == RX_SID_UPDATE) |
-	   (frame_type == RX_SID_BAD) | 
-	   ((frame_type == RX_NO_DATA) && ((st->mem_dtx_global_state != SPEECH) ||
-	   (st->mem_dtx_vad_hist >= D_DTX_HANG_CONST))))
-
+      (frame_type == RX_SID_BAD) | (frame_type == RX_NO_DATA))
    {
-	   encState = DTX;
+      encState = DTX;
    }
    else
    {
-	   encState = SPEECH;
+      encState = SPEECH;
    }
 
    if(encState == SPEECH)
@@ -666,6 +663,10 @@ void D_DTX_exe(D_DTX_State *st, Word16 *exc2, Word16 new_state, Word16 isf[],
          tmp_int_length = 32;
       }
 
+      /* safety guard against division by zero */
+	  if(tmp_int_length <= 0) {
+         tmp_int_length = 8; 
+      }
       st->mem_true_sid_period_inv = D_UTIL_saturate((0x02000000 / (tmp_int_length << 10)));
       st->mem_since_last_sid = 0;
       st->mem_log_en_prev = st->mem_log_en;

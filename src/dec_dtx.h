@@ -35,7 +35,6 @@ typedef struct {
    UWord8 mem_sid_frame;         /* flags SID frames                         */
    UWord8 mem_valid_data;        /* flags SID frames containing valid data   */
    UWord8 mem_dtx_hangover_added;/* flags hangover period at end of speech   */
-   Word16 mem_dtx_vad_hist;      /* "hangover counter"                       */
 
 } D_DTX_State;
 

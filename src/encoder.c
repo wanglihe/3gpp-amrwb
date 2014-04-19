@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
    fprintf(stderr, "\n");
    fprintf(stderr, "===================================================================\n");
-   fprintf(stderr, " 3GPP AMR-WB Floating-point Speech Coder, v6.0.0, Dec 14, 2004\n");
+   fprintf(stderr, " 3GPP AMR-WB Floating-point Speech Coder, v7.0.0, Mar 20, 2007\n");
    fprintf(stderr, "===================================================================\n");
    fprintf(stderr, "\n");
 

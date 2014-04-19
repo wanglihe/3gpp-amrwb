@@ -136,12 +136,6 @@ Word16 D_IF_conversion(Word16 *param, UWord8 *stream, UWord8 *frame_type,
 
    memset(param, 0, PRMNO_24k << 1);
    mode = *stream >> 4;
-   /* SID indication IF2 corresponds to mode 10 */
-   if (mode == 9)
-   {
-      mode ++;
-   }
-
    *fqi = (Word16)((*stream >> 3) & 0x1);
    *stream <<= (HEADER_SIZE - 1);
 
@@ -468,12 +462,6 @@ Word16 D_IF_mms_conversion(Word16 *param, UWord8 *stream, UWord8 *frame_type,
 
    *fqi = (Word16)((*stream >> 2) & 0x01);
    mode = (Word32)((*stream >> 3) & 0x0F);
-
-   /* SID indication IF2 corresponds to mode 10 */
-   if (mode == 9)
-   {
-      mode ++;
-   }
 
    stream++;
 
