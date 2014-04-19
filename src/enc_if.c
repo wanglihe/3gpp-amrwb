@@ -127,6 +127,7 @@ void E_IF_homing_coding(Word16 *parms, Word16 mode)
 }
 
 
+#ifdef IF2
 /*
  * E_IF_if2_conversion
  *
@@ -484,6 +485,375 @@ static int E_IF_if2_conversion(Word16 mode, Word16 *param, UWord8 *stream,
    return j/8;
 }
 
+#else
+
+/*
+ * E_IF_mms_conversion
+ *
+ *
+ * Parameters:
+ *  mode        I: Mode
+ *  param       I: encoder output
+ *  stream      O: packed octets (RFC 3267, section 5.3)
+ *  frame_type  I: TX frame type
+ *  dtx         I: speech mode for mode MRDTX
+ *
+ * Function:
+ *  Packing one frame of encoded parameters to AMR-WB MMS format
+ *
+ * Returns:
+ *    number of octets
+ */
+static int E_IF_mms_conversion(Word16 mode, Word16 *param, UWord8 *stream,
+                               Word16 frame_type, Word16 speech_mode)
+{
+   Word32 j = 0;
+   Word16 const *mask;
+
+   memset(stream, 0, block_size[mode]);
+
+   switch(mode)
+   {
+   case MRNO_DATA:
+      *stream = 0x7C;
+      j = 0;
+      break;
+
+   case MODE_7k:
+      mask = mode_7k;
+      *stream = 0x04;    /* frame_type = 0, fqi = 1  */
+	  stream++;
+
+      for (j = 1; j <= NBBITS_7k; j++)
+      {
+         if (param[*mask] & *(mask + 1))
+         {
+            *stream += 0x1;
+         }
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      while (j % 8)
+      {
+         *stream <<= 1;
+         j++;
+      }
+
+      break;
+
+   case MODE_9k:
+      mask = mode_9k;
+      *stream = 0x0C;    /* frame_type = 1, fqi = 1  */
+	  stream++;
+
+      for (j = 1; j <= NBBITS_9k; j++)
+      {
+         if (param[*mask] & *(mask + 1))
+         {
+            *stream += 0x1;
+         }
+
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      while (j % 8)
+      {
+         *stream <<= 1;
+         j++;
+      }
+
+      break;
+
+   case MODE_12k:
+      mask = mode_12k;
+      *stream = 0x14;    /* frame_type = 2, fqi = 1  */
+	  stream++;
+
+      for (j = 1; j <= NBBITS_12k; j++)
+      {
+         if (param[*mask] & *(mask + 1))
+         {
+            *stream += 0x1;
+         }
+
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      while (j % 8)
+      {
+         *stream <<= 1;
+         j++;
+      }
+      break;
+
+   case MODE_14k:
+      mask = mode_14k;
+      *stream = 0x1C;    /* frame_type = 3, fqi = 1  */
+	  stream++;
+
+      for ( j = 1; j <= NBBITS_14k; j++ )
+      {
+         if (param[*mask] & *(mask + 1))
+         {
+            *stream += 0x1;
+         }
+
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      while (j % 8)
+      {
+         *stream <<= 1;
+         j++;
+      }
+
+      break;
+
+   case MODE_16k:
+      mask = mode_16k;
+      *stream = 0x24;    /* frame_type = 4, fqi = 1  */
+	  stream++;
+
+      for (j = 1; j <= NBBITS_16k; j++)
+      {
+         if (param[*mask] & *(mask + 1))
+         {
+            *stream += 0x1;
+         }
+
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      while (j % 8)
+      {
+         *stream <<= 1;
+         j++;
+      }
+
+      break;
+
+   case MODE_18k:
+      mask = mode_18k;
+      *stream = 0x2C;    /* frame_type = 5, fqi = 1  */
+	  stream++;
+
+      for (j = 1; j <= NBBITS_18k; j++)
+      {
+         if (param[*mask] & *(mask + 1))
+         {
+            *stream += 0x1;
+         }
+
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      while (j % 8)
+      {
+         *stream <<= 1;
+         j++;
+      }
+
+      break;
+
+   case MODE_20k:
+      mask = mode_20k;
+      *stream = 0x34;    /* frame_type = 6, fqi = 1  */
+	  stream++;
+
+      for (j = 1; j <= NBBITS_20k; j++)
+      {
+         if (param[*mask] & *( mask + 1))
+         {
+            *stream += 0x1;
+         }
+
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      while (j % 8)
+      {
+         *stream <<= 1;
+         j++;
+      }
+
+      break;
+
+   case MODE_23k:
+      mask = mode_23k;
+      *stream = 0x3C;    /* frame_type = 7, fqi = 1  */
+	  stream++;
+
+      for (j = 1; j <= NBBITS_23k; j++)
+      {
+         if (param[*mask] & *( mask + 1))
+         {
+            *stream += 0x1;
+         }
+
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      while (j % 8)
+      {
+         *stream <<= 1;
+         j++;
+      }
+
+      break;
+
+   case MODE_24k:
+      mask = mode_24k;
+      *stream = 0x44;    /* frame_type = 8, fqi = 1  */
+	  stream++;
+
+      for (j = 1; j <= NBBITS_24k; j++)
+      {
+         if (param[*mask] & *( mask + 1))
+         {
+            *stream += 0x1;
+         }
+
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      while (j % 8)
+      {
+         *stream <<= 1;
+         j++;
+      }
+
+      break;
+
+   case MRDTX:
+      mask = mode_DTX;
+      *stream = 0x4C;    /* frame_type = 9, fqi = 1  */
+	  stream++;
+
+      for ( j = 1; j <= NBBITS_SID; j++ )
+      {
+         if (param[*mask] & *(mask + 1))
+         {
+            *stream += 0x1;
+         }
+
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+
+      }
+
+      /* sid type */
+      if (frame_type == TX_SID_UPDATE)
+      {
+         /* sid update */
+         *stream += 0x1;
+      }
+
+      /* speech mode indicator */
+      *stream <<= 4;
+      *stream = (UWord8)(*stream + speech_mode);
+      j = 40;
+
+      break;
+
+   default:
+      break;
+
+   }
+
+   return j/8 + 1;
+}
+
+#endif
+
 /*
  * E_IF_sid_sync_reset
  *
@@ -596,7 +966,11 @@ int E_IF_encode(void *st, Word16 req_mode, Word16 *speech, UWord8 *serial,
       frame_type = TX_SPEECH;
    }
 
+#ifdef IF2
    return E_IF_if2_conversion(mode, prms, serial, frame_type, req_mode);
+#else
+   return E_IF_mms_conversion(mode, prms, serial, frame_type, req_mode);
+#endif
 }
 
 /*

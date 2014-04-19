@@ -26,10 +26,10 @@ typedef struct {
    Word16 mem_hist_ptr;          /* index to beginning of LSF history        */
    Word16 mem_dither_seed;       /* comfort noise dithering seed             */
    Word16 mem_cn_dith;           /* background noise stationarity information*/
+   Word16 mem_since_last_sid;    /* number of frames since last SID frame    */
 
    UWord8 mem_dec_ana_elapsed_count;/* counts elapsed speech frames after DTX*/
    UWord8 mem_dtx_global_state;  /* DTX state flags                          */
-   UWord8 mem_since_last_sid;    /* number of frames since last SID frame    */
    UWord8 mem_data_updated;      /* flags CNI updates                        */
    UWord8 mem_dtx_hangover_count;/* counts down in hangover period           */
    UWord8 mem_sid_frame;         /* flags SID frames                         */

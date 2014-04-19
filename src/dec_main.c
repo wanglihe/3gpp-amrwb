@@ -243,14 +243,14 @@ Word32 D_MAIN_decode(Word16 mode, Word16 prms[], Word16 synth16k[],
    }
 
    /* SPEECH action state machine  */
-   if((frame_type == RX_SPEECH_BAD) | (frame_type == RX_NO_DATA) |
+   if((frame_type == RX_SPEECH_BAD) |
       (frame_type == RX_SPEECH_PROBABLY_DEGRADED))
    {
       /* bfi for all index, bits are not usable */
       bfi = 1;
       unusable_frame = 0;
    }
-   else if(frame_type == RX_SPEECH_LOST)
+   else if((frame_type == RX_NO_DATA) | (frame_type == RX_SPEECH_LOST))
    {
       /* bfi only for lsf, gains and pitch period */
       bfi = 1;

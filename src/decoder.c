@@ -9,6 +9,11 @@
 #include "typedef.h"
 #include "dec_if.h"
 
+#ifndef IF2
+#include <string.h>
+#define AMRWB_MAGIC_NUMBER "#!AMR-WB\n"
+#endif
+
 /*
  * DECODER.C
  *
@@ -36,11 +41,14 @@ int main(int argc, char *argv[])
     Word16 mode;
     Word32 frame;
 
+#ifndef IF2
+	char magic[16];
+#endif
     void *st;
 
     fprintf(stderr, "\n");
 	   fprintf(stderr, "===================================================================\n");
-	   fprintf(stderr, " 3GPP AMR-WB Floating-point Speech Decoder, v5.0.0, Mar 05, 2002\n");
+	   fprintf(stderr, " 3GPP AMR-WB Floating-point Speech Decoder, v5.1.0, Feb 18, 2003\n");
 	   fprintf(stderr, "===================================================================\n");
    fprintf(stderr, "\n");
 
@@ -52,7 +60,11 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Usage : decoder  bitstream_file  synth_file\n");
         fprintf(stderr, "\n");
         fprintf(stderr, "Format for bitstream_file:\n");
-        fprintf(stderr, "  Described in TS26.201.\n");
+#ifdef IF2
+		fprintf(stderr, "  Described in TS26.201.\n");
+#else
+		fprintf(stderr, "  Described in RFC 3267 (Sections 5.1 and 5.3).\n");
+#endif
         fprintf(stderr, "\n");
         fprintf(stderr, "Format for synth_file:\n");
         fprintf(stderr, "  Synthesis is written to a binary file of 16 bits data.\n");
@@ -86,6 +98,20 @@ int main(int argc, char *argv[])
      */
     st = D_IF_init();
 
+#ifndef IF2
+   /* read magic number */
+   fread(magic, sizeof(char), strlen(AMRWB_MAGIC_NUMBER), f_serial);
+
+   /* verify magic number */
+   if (strncmp(magic, AMRWB_MAGIC_NUMBER, strlen(AMRWB_MAGIC_NUMBER)))
+   {
+	   fprintf(stderr, "%s%s\n", "Invalid magic number: ", magic);
+	   fclose(f_serial);
+	   fclose(f_synth);
+	   exit(0);
+   }
+#endif
+
     /*
      * Loop for each "L_FRAME" speech data
      */
@@ -94,17 +120,21 @@ int main(int argc, char *argv[])
     frame = 0;
     while (fread(serial, sizeof (UWord8), 1, f_serial ) > 0)
     {
+#ifdef IF2
        mode = (Word16)(serial[0] >> 4);
-       fread(&serial[1], sizeof (UWord8), block_size[mode] - 1, f_serial );
+#else
+	   mode = (Word16)((serial[0] >> 3) & 0x0F);
+#endif
+	   fread(&serial[1], sizeof (UWord8), block_size[mode] - 1, f_serial );
 
-       frame++;
+	   frame++;
 
-       fprintf(stderr, " Decoding frame: %ld\r", frame);
+	   fprintf(stderr, " Decoding frame: %ld\r", frame);
 
-       D_IF_decode( st, serial, synth, _good_frame);
+	   D_IF_decode( st, serial, synth, _good_frame);
 
-       fwrite(synth, sizeof(Word16), L_FRAME16k, f_synth);
-       fflush(f_synth);
+	   fwrite(synth, sizeof(Word16), L_FRAME16k, f_synth);
+	   fflush(f_synth);
     }
 
     D_IF_exit(st);

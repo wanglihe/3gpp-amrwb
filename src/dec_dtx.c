@@ -204,7 +204,7 @@ UWord8 D_DTX_rx_handler(D_DTX_State *st, UWord8 frame_type)
 
       /* evaluate if noise parameters are too old                     */
       /* since_last_sid is reset when CN parameters have been updated */
-      st->mem_since_last_sid++;
+      st->mem_since_last_sid = D_UTIL_saturate(st->mem_since_last_sid + 1);
 
       /* no update of sid parameters in DTX for a Word32 while */
       if(st->mem_since_last_sid > D_DTX_MAX_EMPTY_THRESH)
@@ -662,12 +662,12 @@ void D_DTX_exe(D_DTX_State *st, Word16 *exc2, Word16 new_state, Word16 isf[],
          tmp_int_length = 32;
       }
 
-      st->mem_true_sid_period_inv = (Word16)(0x7FFFFFFF / tmp_int_length);
+      st->mem_true_sid_period_inv = D_UTIL_saturate((0x02000000 / (tmp_int_length << 10)));
       st->mem_since_last_sid = 0;
       st->mem_log_en_prev = st->mem_log_en;
 
       /* subtract 1/8 in Q9 (energy), i.e -3/8 dB */
-      st->mem_log_en = (Word16)(st->mem_log_en - 64);
+      st->mem_log_en = D_UTIL_saturate(st->mem_log_en - 64);
    }
 
    /* reset interpolation length timer if data has been updated.        */

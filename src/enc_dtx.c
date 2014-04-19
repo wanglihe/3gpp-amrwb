@@ -1241,21 +1241,23 @@ static Word16 E_DTX_decision(E_DTX_Vad_State *st, Float32 level[COMPLEN], Float6
     */
    temp = noise_level * MIN_SPEECH_SNR * 8;
 
-   if (st->mem_speech_level < temp)
+   if (st->mem_speech_level <= temp)
    {
       st->mem_speech_level = temp;
+
+      /* avoid log10 error */
+      temp -= 1E-8F;
    }
-
+   
    ilog2_noise_level = (Float32)(-1024.0F * log10(noise_level / 2147483648.0F) / log10(2.0F));
-
+  
    /*
     * If SNR is very poor, speech_level is probably corrupted by noise level. This
     * is correctred by subtracting -MIN_SPEECH_SNR*noise_level from speech level
     */
    ilog2_speech_level = (Float32)(-1024.0F * log10((st->mem_speech_level - temp) / 2147483648.0F) / log10(2.0F));
-   /* ilog2_speech_level = ilog2(st->speech_level); */
 
-   temp = NO_SLOPE * (ilog2_noise_level- NO_P1)+ THR_HIGH;
+   temp = NO_SLOPE * (ilog2_noise_level- NO_P1) + THR_HIGH;
 
    temp2 = SP_CH_MIN + SP_SLOPE * (ilog2_speech_level - SP_P1);
 
@@ -1263,6 +1265,7 @@ static Word16 E_DTX_decision(E_DTX_Vad_State *st, Float32 level[COMPLEN], Float6
    {
       temp2 = SP_CH_MIN;
    }
+
    if (temp2 > SP_CH_MAX)
    {
       temp2 = SP_CH_MAX;
@@ -1284,7 +1287,7 @@ static Word16 E_DTX_decision(E_DTX_Vad_State *st, Float32 level[COMPLEN], Float6
    {
       st->mem_vadreg = (Word16)(st->mem_vadreg | 0x4000);
    }
-   /* primary vad decsion made */
+   /* primary vad decision made */
 
    /* check if the input power (pow_sum) is lower than a threshold" */
 

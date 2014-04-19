@@ -10,12 +10,20 @@ speech encoder and fast fixed-point speech decoder. The fast fixed-point
 speech decoder is bit-exact with 3GPP TS 26.173 fixed-point speech decoder 
 version 5.4.0.
 
-The codec outputs packed 8-bit file format that is in line with the 
-AMR IF2 format of the 3GPP specification TS 26.201 "Speech Codec 
-speech processing functions; AMR Wideband Speech Codec; Frame Structure".
-
 COMPILING THE SOFTWARE
 ======================
+
+By default the encoder output and decoder input are formatted according to the
+MIME file storage format used e.g. by the MMS service. The specification of
+this format can be found in RFC 3267 "Real-Time Transport Protocol(RTP) Payload
+Format and File Storage Format for the Adaptive Multi-Rate (AMR) and Adaptive
+Multi-Rate Wideband (AMR-WB) Audio Codecs", sections 5.1 and 5.3.
+
+You can compile a package with an output compatible with the AMR-WB IF2 format
+specified in the 3GPP specification TS 26.201 "Speech Codec speech processing
+functions; AMR Wideband Speech Codec; Frame Structure" by defining "IF2" during
+compiling.
+
 File typedef.h has definitions of numeric datatypes. You must change 
 these according your platform. The default datatypes are defined for IA-32 
 architecture.
@@ -91,6 +99,7 @@ HISTORY
 =======
 
 v. 5.0.0	05.03.02
+v. 5.1.0	18.02.03
 
 
 

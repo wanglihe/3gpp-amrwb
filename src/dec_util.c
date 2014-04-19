@@ -82,20 +82,32 @@ Word16 D_UTIL_random(Word16 *seed)
  */
 Word32 D_UTIL_pow2(Word16 exponant, Word16 fraction)
 {
-   Word32 L_x, tmp, i, exp;
-   Word16 a;
+	Word32 L_x, tmp, i, exp;
+	Word16 a;
 
-   L_x = fraction * 32;          /* L_x = fraction<<6             */
-   i = L_x >> 15;                /* Extract b10-b16 of fraction   */
-   a = (Word16)(L_x);            /* Extract b0-b9   of fraction   */
-   a = (Word16)(a & (Word16)0x7fff);
-   L_x = D_ROM_pow2[i] << 16;    /* table[i] << 16                */
-   tmp = D_ROM_pow2[i] - D_ROM_pow2[i + 1];  /* table[i] - table[i+1] */
-   L_x = L_x - ((tmp * a) << 1); /* L_x -= tmp*a*2                */
-   exp = 30 - exponant;
-   L_x = (L_x + (1 << (exp - 1))) >> exp;
+	L_x = fraction * 32;          /* L_x = fraction<<6             */
+	i = L_x >> 15;                /* Extract b10-b16 of fraction   */
+	a = (Word16)(L_x);            /* Extract b0-b9   of fraction   */
+	a = (Word16)(a & (Word16)0x7fff);
+	L_x = D_ROM_pow2[i] << 16;    /* table[i] << 16                */
+	tmp = D_ROM_pow2[i] - D_ROM_pow2[i + 1];  /* table[i] - table[i+1] */
+	tmp = L_x - ((tmp * a) << 1); /* L_x -= tmp*a*2                */
+	exp = 30 - exponant;
+	if (exp <= 31)
+	{
+		L_x = tmp >> exp;
 
-   return(L_x);
+		if ((1 << (exp - 1)) & tmp)
+		{
+			L_x++;
+		}
+	}
+	else
+	{
+		L_x = 0;
+	}
+
+	return(L_x);
 }
 
 

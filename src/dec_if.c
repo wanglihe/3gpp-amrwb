@@ -109,7 +109,7 @@ Word16 D_IF_homing_frame_test_first(Word16 input_frame[], Word16 mode)
    return (Word16)!memcmp(input_frame, dhf[mode], nb_of_param_first[mode] * sizeof(Word16));
 }
 
-
+#ifdef IF2
 /*
  * D_IF_conversion
  *
@@ -437,6 +437,341 @@ Word16 D_IF_conversion(Word16 *param, UWord8 *stream, UWord8 *frame_type,
 
    return (Word16)mode;
 }
+
+#else
+
+/*
+ * D_IF_mms_conversion
+ *
+ *
+ * Parameters:
+ *    param             O: AMR parameters
+ *    stream            I: input bitstream
+ *    frame_type        O: frame type
+ *    speech_mode       O: speech mode in DTX
+ *    fqi               O: frame quality indicator
+ *
+ * Function:
+ *    Unpacks MMS formatted octet stream (see RFC 3267, section 5.3)
+ *
+ * Returns:
+ *    mode              used mode
+ */
+Word16 D_IF_mms_conversion(Word16 *param, UWord8 *stream, UWord8 *frame_type,
+                           Word16 *speech_mode, Word16 *fqi)
+{
+   Word32 mode;
+   Word32 j;
+   Word16 const *mask;
+
+   memset(param, 0, PRMNO_24k << 1);
+
+   *fqi = (Word16)((*stream >> 2) & 0x01);
+   mode = (Word32)((*stream >> 3) & 0x0F);
+
+   /* SID indication IF2 corresponds to mode 10 */
+   if (mode == 9)
+   {
+      mode ++;
+   }
+
+   stream++;
+
+   switch (mode)
+   {
+   case MRDTX:
+      mask = mode_DTX;
+
+      for (j = 1; j <= NBBITS_SID; j++)
+      {
+         if (*stream & 0x80)
+         {
+            param[*mask] = (Word16)(param[*mask] + *(mask + 1));
+         }
+
+         mask += 2;
+
+         if ( j % 8 )
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      /* get SID type bit */
+
+      *frame_type = RX_SID_FIRST;
+
+      if (*stream & 0x80)
+      {
+         *frame_type = RX_SID_UPDATE;
+      }
+
+      *stream <<= 1;
+
+      /* speech mode indicator */
+      *speech_mode = (Word16)(*stream >> 4);
+      break;
+
+   case MRNO_DATA:
+      *frame_type = RX_NO_DATA;
+      break;
+
+   case LOST_FRAME:
+      *frame_type = RX_SPEECH_LOST;
+      break;
+
+   case MODE_7k:
+      mask = mode_7k;
+
+      for (j = 1; j <= NBBITS_7k; j++)
+      {
+         if ( *stream & 0x80 )
+         {
+            param[*mask] = (Word16)(param[*mask] + *(mask + 1));
+         }
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      *frame_type = RX_SPEECH_GOOD;
+      break;
+
+   case MODE_9k:
+      mask = mode_9k;
+
+      for (j = 1; j <= NBBITS_9k; j++)
+      {
+         if (*stream & 0x80)
+         {
+            param[*mask] = (Word16)(param[*mask] + *(mask + 1));
+         }
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      *frame_type = RX_SPEECH_GOOD;
+      break;
+
+   case MODE_12k:
+      mask = mode_12k;
+
+      for (j = 1; j <= NBBITS_12k; j++)
+      {
+         if (*stream & 0x80)
+         {
+            param[*mask] = (Word16)(param[*mask] + *(mask + 1));
+         }
+         mask += 2;
+
+         if ( j % 8 )
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      *frame_type = RX_SPEECH_GOOD;
+      break;
+
+   case MODE_14k:
+      mask = mode_14k;
+
+      for (j = 1; j <= NBBITS_14k; j++)
+      {
+         if (*stream & 0x80)
+         {
+            param[*mask] = (Word16)(param[*mask] + *(mask + 1));
+         }
+
+         mask += 2;
+
+         if ( j % 8 )
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      *frame_type = RX_SPEECH_GOOD;
+      break;
+
+   case MODE_16k:
+      mask = mode_16k;
+
+      for (j = 1; j <= NBBITS_16k; j++)
+      {
+         if (*stream & 0x80)
+         {
+            param[*mask] = (Word16)(param[*mask] + *(mask + 1));
+         }
+
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      *frame_type = RX_SPEECH_GOOD;
+      break;
+
+   case MODE_18k:
+      mask = mode_18k;
+
+      for (j = 1; j <= NBBITS_18k; j++)
+      {
+         if (*stream & 0x80)
+         {
+            param[*mask] = (Word16)(param[*mask] + *(mask + 1));
+         }
+
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      *frame_type = RX_SPEECH_GOOD;
+      break;
+
+   case MODE_20k:
+      mask = mode_20k;
+
+      for (j = 1; j <= NBBITS_20k; j++)
+      {
+         if (*stream & 0x80)
+         {
+            param[*mask] = (Word16)(param[*mask] + *(mask + 1));
+         }
+
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+      }
+
+      *frame_type = RX_SPEECH_GOOD;
+      break;
+
+   case MODE_23k:
+      mask = mode_23k;
+
+      for (j = 1; j <= NBBITS_23k; j++)
+      {
+         if (*stream & 0x80)
+         {
+            param[*mask] = (Word16)(param[*mask] + *(mask + 1));
+         }
+
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+
+      }
+
+      *frame_type = RX_SPEECH_GOOD;
+      break;
+
+   case MODE_24k:
+      mask = mode_24k;
+
+      for (j = 1; j <= NBBITS_24k; j++)
+      {
+         if (*stream & 0x80)
+         {
+            param[*mask] = (Word16)(param[*mask] + *(mask + 1));
+         }
+
+         mask += 2;
+
+         if (j % 8)
+         {
+            *stream <<= 1;
+         }
+         else
+         {
+            stream++;
+         }
+
+      }
+
+      *frame_type = RX_SPEECH_GOOD;
+      break;
+
+   default:
+      *frame_type = RX_SPEECH_LOST;
+      *fqi = 0;
+      break;
+
+   }
+
+   if (*fqi == 0)
+   {
+      if (*frame_type == RX_SPEECH_GOOD)
+      {
+         *frame_type = RX_SPEECH_BAD;
+      }
+      if ((*frame_type == RX_SID_FIRST) | (*frame_type == RX_SID_UPDATE))
+      {
+         *frame_type = RX_SID_BAD;
+      }
+   }
+
+   return (Word16)mode;
+}
+
+#endif
+
 /*
  * D_IF_decode
  *
@@ -477,12 +812,20 @@ void D_IF_decode( void *st, UWord8 *bits, Word16 *synth, Word32 lfi)
    if ((lfi == _good_frame) | (lfi == _bad_frame))
    {
       /* add fqi data */
+#ifdef IF2
       *bits = (UWord8)((Word32)*bits & ~(lfi << 3));
+#else
+      *bits = (UWord8)((Word32)*bits & ~(lfi << 2));
+#endif
       /*
        * extract mode information and frame_type,
        * octets to parameters
        */
+#ifdef IF2
       mode = D_IF_conversion( prm, bits, &frame_type, &speech_mode, &fqi);
+#else
+      mode = D_IF_mms_conversion( prm, bits, &frame_type, &speech_mode, &fqi);
+#endif
 
    }
    else if (lfi == _no_frame)

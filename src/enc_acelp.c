@@ -1002,7 +1002,8 @@ void E_ACELP_2t(Float32 dn[], Float32 cn[], Float32 H[],
 
       for(j = 1; j < L_SUBFR; j += 2)
       {
-         *p0++ = *p0 * psign[j];
+         *p0 = *p0 * psign[j];
+         p0++;
       }
    }
 
@@ -1493,22 +1494,23 @@ void E_ACELP_4t(Float32 dn[], Float32 cn[], Float32 H[], Word16 code[],
 
          j = (k + 1) % 4;
 
-         *p0++ = *p0 * psign[j];
-         *p0++ = *p0 * psign[j + 4];
-         *p0++ = *p0 * psign[j + 8];
-         *p0++ = *p0 * psign[j + 12];
-         *p0++ = *p0 * psign[j + 16];
-         *p0++ = *p0 * psign[j + 20];
-         *p0++ = *p0 * psign[j + 24];
-         *p0++ = *p0 * psign[j + 28];
-         *p0++ = *p0 * psign[j + 32];
-         *p0++ = *p0 * psign[j + 36];
-         *p0++ = *p0 * psign[j + 40];
-         *p0++ = *p0 * psign[j + 44];
-         *p0++ = *p0 * psign[j + 48];
-         *p0++ = *p0 * psign[j + 52];
-         *p0++ = *p0 * psign[j + 56];
-         *p0++ = *p0 * psign[j + 60];
+         p0[0] = p0[0] * psign[j];
+         p0[1] = p0[1] * psign[j + 4];
+         p0[2] = p0[2] * psign[j + 8];
+         p0[3] = p0[3] * psign[j + 12];
+         p0[4] = p0[4] * psign[j + 16];
+         p0[5] = p0[5] * psign[j + 20];
+         p0[6] = p0[6] * psign[j + 24];
+         p0[7] = p0[7] * psign[j + 28];
+         p0[8] = p0[8] * psign[j + 32];
+         p0[9] = p0[9] * psign[j + 36];
+         p0[10] = p0[10] * psign[j + 40];
+         p0[11] = p0[11] * psign[j + 44];
+         p0[12] = p0[12] * psign[j + 48];
+         p0[13] = p0[13] * psign[j + 52];
+         p0[14] = p0[14] * psign[j + 56];
+         p0[15] = p0[15] * psign[j + 60];
+         p0 += 16;
       }
    }
 

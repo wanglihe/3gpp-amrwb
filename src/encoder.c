@@ -9,6 +9,9 @@
 #include "typedef.h"
 #include "enc_if.h"
 
+#ifndef IF2
+#define AMRWB_MAGIC_NUMBER "#!AMR-WB\n"
+#endif
 
 /*
  * ENCODER.C
@@ -40,7 +43,7 @@ int main(int argc, char *argv[])
 
    fprintf(stderr, "\n");
    fprintf(stderr, "===================================================================\n");
-   fprintf(stderr, " 3GPP AMR-WB Floating-point Speech Coder, v5.0.0, Mar 05, 2002\n");
+   fprintf(stderr, " 3GPP AMR-WB Floating-point Speech Coder, v5.1.0, Feb 18, 2003\n");
    fprintf(stderr, "===================================================================\n");
    fprintf(stderr, "\n");
 
@@ -56,7 +59,11 @@ int main(int argc, char *argv[])
       fprintf(stderr, "  Speech is read form a binary file of 16 bits data.\n");
       fprintf(stderr, "\n");
       fprintf(stderr, "Format for bitstream_file:\n");
+#ifdef IF2
       fprintf(stderr, "  Described in TS26.201.\n");
+#else
+      fprintf(stderr, "  Described in RFC 3267 (Sections 5.1 and 5.3).\n");
+#endif
       fprintf(stderr, "\n");
       fprintf(stderr, "mode: 0 to 8 (9 bits rates) or\n");
       fprintf(stderr, "      -modefile filename\n");
@@ -116,6 +123,16 @@ int main(int argc, char *argv[])
     */
 
    st = E_IF_init();
+
+#ifndef IF2
+
+   /* If MMS output is selected, write the magic number at the beginning of the
+    * bitstream file
+	*/
+
+	fwrite(AMRWB_MAGIC_NUMBER, sizeof(char), strlen(AMRWB_MAGIC_NUMBER), f_serial);
+
+#endif
 
    /*
     * Loop for every analysis/transmission frame.

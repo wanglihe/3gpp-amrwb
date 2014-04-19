@@ -72,7 +72,11 @@
  * 6 bytes are used both for mode 9 and 10.
  * Mode 9 is used in encoder and mode 10 in IF2
  */
+#ifdef IF2
 const UWord8 block_size[16]= {18, 23, 33, 37, 41, 47, 51, 59, 61, 6, 6, 0, 0, 0, 1, 1};
+#else
+const UWord8 block_size[16]= {18, 24, 33, 37, 41, 47, 51, 59, 61, 6, 6, 0, 0, 0, 1, 1};
+#endif
 /*
  * tables
  */
