@@ -8,7 +8,7 @@ This readme.txt shortly explains the compilation and use of the AMR-WB floating
 point C-code. The package contains C-source files for the AMR floating-point 
 speech encoder and fast fixed-point speech decoder. The fast fixed-point 
 speech decoder is bit-exact with 3GPP TS 26.173 fixed-point speech decoder 
-version 5.4.0.
+version 5.8.0.
 
 COMPILING THE SOFTWARE
 ======================
@@ -100,6 +100,7 @@ HISTORY
 
 v. 5.0.0	05.03.02
 v. 5.1.0	18.02.03
+v. 5.2.0	27.08.03
 
 
 

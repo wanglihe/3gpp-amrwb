@@ -660,8 +660,11 @@ static void D_UTIL_synthesis_32(Word16 a[], Word16 m, Word16 exc[],
                                 Word16 Qnew, Word16 sig_hi[], Word16 sig_lo[],
                                 Word16 lg)
 {
-   Word32 i, j, a0;
+   Word32 i, j, a0, s;
    Word32 tmp, tmp2;
+
+   /* See if a[0] is scaled */
+   s = D_UTIL_norm_s((Word16)a[0]) - 2;
 
    a0 = a[0] >> (4 + Qnew);   /* input / 16 and >>Qnew */
 
@@ -685,6 +688,7 @@ static void D_UTIL_synthesis_32(Word16 a[], Word16 m, Word16 exc[],
       }
 
       tmp += tmp2 << 1;
+      tmp <<= s;
 
       /* sig_hi = bit16 to bit31 of synthesis */
       sig_hi[i] = (Word16)(tmp >> 13);
@@ -972,12 +976,14 @@ void D_UTIL_hp400_12k8(Word16 signal[], Word16 lg, Word16 mem[])
 static void D_UTIL_synthesis(Word16 a[], Word16 m, Word16 x[], Word16 y[],
                              Word16 lg, Word16 mem[], Word16 update)
 {
-   Word32 i, j, tmp;
+   Word32 i, j, tmp, s;
    Word16 y_buf[L_SUBFR16k + M16k], a0;
    Word16 *yy;
 
    yy = &y_buf[m];
 
+   /* See if a[0] is scaled */
+   s = D_UTIL_norm_s(a[0]) - 2;
    /* copy initial filter states into synthesis buffer */
    memcpy(y_buf, mem, m * sizeof(Word16));
 
@@ -992,6 +998,7 @@ static void D_UTIL_synthesis(Word16 a[], Word16 m, Word16 x[], Word16 y[],
       {
          tmp -= a[j] * yy[i - j];
       }
+      tmp <<= s;
 
       y[i] = yy[i] = (Word16)((tmp + 0x800) >> 12);
    }
@@ -1310,7 +1317,7 @@ void D_UTIL_dec_synthesis(Word16 Aq[], Word16 exc[], Word16 Q_new,
    if((mode <= MODE_7k) & (newDTXState == SPEECH))
    {
       D_LPC_isf_extrapolation(HfIsf);
-      D_LPC_isp_a_conversion(HfIsf, HfA, M16k);
+      D_LPC_isp_a_conversion(HfIsf, HfA, 0, M16k);
       D_LPC_a_weight(HfA, Ap, 29491, M16k);   /* fac=0.9 */
       D_UTIL_synthesis(Ap, M16k, HF, HF, L_SUBFR16k, st->mem_syn_hf, 1);
    }

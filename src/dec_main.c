@@ -331,7 +331,7 @@ Word32 D_MAIN_decode(Word16 mode, Word16 prms[], Word16 synth16k[],
        * Convert ISFs to the cosine domain
        */
       D_LPC_isf_isp_conversion(isf, ispnew, M);
-      D_LPC_isp_a_conversion(ispnew, Aq, M);
+      D_LPC_isp_a_conversion(ispnew, Aq, 1, M);
       memcpy(isf_tmp, st->mem_isf, M * sizeof(Word16));
 
       for(i_subfr = 0; i_subfr < L_FRAME; i_subfr += L_SUBFR)
