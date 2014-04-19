@@ -20,8 +20,8 @@
 #define MODE_20k      6
 #define MODE_23k      7
 #define MODE_24k      8
-#define MRDTX        10
-#define NUM_OF_MODES 11
+#define MRDTX        9
+#define NUM_OF_MODES 10
 #define LOST_FRAME   14
 #define MRNO_DATA    15
 #define EHF_MASK     (Word16)0x0008 /* homing frame pattern */

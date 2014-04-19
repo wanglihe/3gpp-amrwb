@@ -49,7 +49,7 @@
 #define MODE_20k     6
 #define MODE_23k     7
 #define MODE_24k     8
-#define MRDTX        10
+#define MRDTX        9
 
 extern const Word16 E_ROM_isp[];
 extern const Word16 E_ROM_isf[];

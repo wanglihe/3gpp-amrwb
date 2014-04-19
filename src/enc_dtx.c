@@ -18,7 +18,7 @@
 #define GAIN_THR                    1.406
 #define ORDER                       16    /* order of linear prediction filter   */
 #define RANDOM_INITSEED             21845 /* own random init value               */
-#define MRDTX                       10
+#define MRDTX                       9
 
 #define SIZE_BK_NOISE1  64
 #define SIZE_BK_NOISE2  64
