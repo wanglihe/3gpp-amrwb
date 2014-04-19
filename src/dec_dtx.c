@@ -77,7 +77,6 @@ int D_DTX_reset(D_DTX_State *st, const Word16 *isf_init)
    st->mem_data_updated = 0;
    st->mem_dither_seed = RANDOM_INITSEED;
    st->mem_cn_dith = 0;
-   st->mem_dtx_vad_hist = 0;
 
    return(0);
 }
@@ -244,16 +243,13 @@ UWord8 D_DTX_rx_handler(D_DTX_State *st, UWord8 frame_type)
    st->mem_dtx_hangover_added = 0;
 
    if((frame_type == RX_SID_FIRST) | (frame_type == RX_SID_UPDATE) |
-	   (frame_type == RX_SID_BAD) | 
-	   ((frame_type == RX_NO_DATA) && ((st->mem_dtx_global_state != SPEECH) ||
-	   (st->mem_dtx_vad_hist >= D_DTX_HANG_CONST))))
-
+      (frame_type == RX_SID_BAD) | (frame_type == RX_NO_DATA))
    {
-	   encState = DTX;
+      encState = DTX;
    }
    else
    {
-	   encState = SPEECH;
+      encState = SPEECH;
    }
 
    if(encState == SPEECH)
